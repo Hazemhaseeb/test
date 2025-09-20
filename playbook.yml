@@ -1,0 +1,63 @@
+- name: Ansible With_* + Register + Debug Examples
+  hosts: localhost
+  gather_facts: no 
+
+  tasks:
+    # 1. إنشاء مستخدمين باستخدام with_items
+    - name: Create users
+      user:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - joe
+        - george
+        - ravi
+        - mani
+      register: user_results 
+
+    - name: Show created users
+      debug:
+        var: user_results.results 
+
+    # 2. عرض ملفات إعدادات باستخدام with_file
+    - name: View Config Files
+      debug:
+        var: item
+      with_file:
+        - "/etc/hosts"
+        - "/etc/resolv.conf"
+        - "/etc/ntp.conf"
+      register: file_results 
+
+    - name: Show file results
+      debug:
+        var: file_results.results 
+
+    # 3. جلب بيانات من URLs باستخدام with_url
+    - name: Get from multiple URLs
+      debug:
+        msg: "Fetching from {{ item }}"
+      with_url:
+        - "https://site1.com/get-servers"
+        - "https://site2.com/get-servers"
+        - "https://site3.com/get-servers"
+      register: url_results 
+
+    - name: Show URL results
+      debug:
+        var: url_results.results 
+
+    # 4. التحقق من MongoDB باستخدام with_mongodb
+    - name: Check multiple mongodbs
+      debug:
+        msg: "DB={{ item.database }} | Connection={{ item.connection_string }}"
+      with_mongodb:
+        - database: dev
+          connection_string: "mongodb://dev.mongo/"
+        - database: prod
+          connection_string: "mongodb://prod.mongo/"
+      register: mongo_results 
+
+    - name: Show MongoDB results
+      debug:
+        var: mongo_results.results
